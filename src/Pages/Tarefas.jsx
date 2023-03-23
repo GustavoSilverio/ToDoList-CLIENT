@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './tarefas.css';
 import { http } from '../Services/Provider';
+import Modals from '../Components/Modal';
 // import { Icon } from '@mdi/react';
 // import { mdiGithub } from '@mdi/js';
 
@@ -9,9 +10,17 @@ const Tarefas = () => {
     const [tarefas, setTarefas] = useState([]);
     const [titulo, setTitulo] = useState("");
     const [desc, setDesc] = useState("");
+    const [show, setShow] = useState(false);
+    const [tarefaSelecionada, setTareafaSelecionada] = useState([]);
+    const [editar, setEditar] = useState(false);
+    const setModalShow = (id) =>
+    {
+        setTareafaSelecionada(tarefas.filter(t=> t.id == id))
+        setShow(true);
+    }
 
-     const sla = async () => {
-        http.get('api/tarefas/obter-todas').then((res)=> {
+    const sla = async () => {
+        http.get('api/tarefas/obter-todas').then((res) => {
             setTarefas(res.data);
         })
     }
@@ -19,12 +28,17 @@ const Tarefas = () => {
         sla();
     }, [])
 
+    function editarf() {
+
+        setEditar(true);
+    }
+
     // ESTA DANDO ERRO, ENTAO ARRUMAR
 
     async function novaTarefa() {
         http.post('api/tarefas/criar-task', {
             title: titulo,
-            desc: desc
+            description: desc
         })
     }
 
@@ -36,7 +50,7 @@ const Tarefas = () => {
                     <p className='bgc'>{t.description}</p>
                 </div>
                 <div className="butts">
-                    <button className='visu-but-task'>Visualizar</button>
+                    <button onClick={() => setModalShow(t.id)} className='visu-but-task'>Visualizar</button>
                     <button className='Excl-but-task'>Excluir</button>
                 </div>
             </li>
@@ -66,10 +80,18 @@ const Tarefas = () => {
                 </div>
                 <div className="lista-de-tarefas">
                     <ul className='lista-das-tarefas'>
-                        { tarefas && listaTarefas}
+                        {tarefas && listaTarefas}
                     </ul>
                 </div>
             </div>
+
+            <Modals
+                show={show}
+                onHide={() => setShow(false)}
+                tarefaSelecionada={tarefaSelecionada}
+            />
+
+
         </>
     );
 }
