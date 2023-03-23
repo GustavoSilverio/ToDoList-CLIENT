@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './tarefas.css';
 import { http } from '../Services/Provider';
 import Swal from 'sweetalert2';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 // import { Icon } from '@mdi/react';
 // import { mdiGithub } from '@mdi/js';
 
@@ -11,11 +11,14 @@ const Tarefas = () => {
     const [tarefas, setTarefas] = useState([]);
     const [titulo, setTitulo] = useState("");
     const [desc, setDesc] = useState("");
-    const [obrigatorio, setObrigatorio] = useState(false);
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const [idSelecionado, setIdSelecionado] = useState(0)
+    const [tarefaSelecionada, setTareafaSelecionada] = useState([]);
+    const [editar, setEditar] = useState(false);
+    const setModalShow = (id) =>
+    {
+        setTareafaSelecionada(tarefas.filter(t=> t.id == id))
+        setShow(true);
+    }
 
      const getTarefas = async () => {
        await http.get('api/tarefas/obter-todas').then((res)=> {
@@ -25,6 +28,13 @@ const Tarefas = () => {
     useEffect(() => {
         getTarefas();
     }, [])
+
+    function editarf() {
+
+        setEditar(true);
+    }
+
+    // ESTA DANDO ERRO, ENTAO ARRUMAR
 
     async function novaTarefa() {
 
@@ -101,8 +111,8 @@ const Tarefas = () => {
                     <p className='bgc'>{t.description}</p>
                 </div>
                 <div className="butts">
-                    <button onClick={() => {handleShow(t.id); setIdSelecionado(t.id)}} className='visu-but-task'>Visualizar</button>
-                    <button onClick={() => excluirTarefa(t.id)} className='Excl-but-task'>Excluir</button>
+                    <button onClick={() => setModalShow(t.id)} className='visu-but-task'>Visualizar</button>
+                    <button className='Excl-but-task'>Excluir</button>
                 </div>
             </li>
         </>
@@ -131,7 +141,7 @@ const Tarefas = () => {
                 </div>
                 <div className="lista-de-tarefas">
                     <ul className='lista-das-tarefas'>
-                        { tarefas && listaTarefas}
+                        {tarefas && listaTarefas}
                     </ul>
                 </div>
             </div>
@@ -160,6 +170,14 @@ const Tarefas = () => {
                 </Modal.Footer>
             </Modal>
             </div>
+
+            <Modals
+                show={show}
+                onHide={() => setShow(false)}
+                tarefaSelecionada={tarefaSelecionada}
+            />
+
+
         </>
     );
 }
