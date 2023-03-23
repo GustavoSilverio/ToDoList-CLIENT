@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './tarefas.css';
 import { http } from '../Services/Provider';
+import Swal from 'sweetalert2';
+import { Modal, Button } from 'react-bootstrap';
 // import { Icon } from '@mdi/react';
 // import { mdiGithub } from '@mdi/js';
 
@@ -9,22 +11,85 @@ const Tarefas = () => {
     const [tarefas, setTarefas] = useState([]);
     const [titulo, setTitulo] = useState("");
     const [desc, setDesc] = useState("");
+    const [obrigatorio, setObrigatorio] = useState(false);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const [idSelecionado, setIdSelecionado] = useState(0)
 
-     const sla = async () => {
-        http.get('api/tarefas/obter-todas').then((res)=> {
+     const getTarefas = async () => {
+       await http.get('api/tarefas/obter-todas').then((res)=> {
             setTarefas(res.data);
         })
     }
     useEffect(() => {
-        sla();
+        getTarefas();
     }, [])
 
-    // ESTA DANDO ERRO, ENTAO ARRUMAR
-
     async function novaTarefa() {
-        http.post('api/tarefas/criar-task', {
+
+        if(!titulo){
+            Swal.fire({
+                icon: 'error',
+                title: 'o título é obrigatório!',
+                showConfirmButton: false,
+                timer: 2000,
+                position: "top-end",
+                toast: true,
+                timerProgressBar: true,
+                customClass: {
+                    timerProgressBar: "prog-bar-error"
+                }
+            })
+
+            setObrigatorio(!obrigatorio);
+        }
+
+       await http.post('api/tarefas/criar-task', {
             title: titulo,
-            desc: desc
+            description: desc
+        }).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Tarefa adicionada com sucesso!',
+                showConfirmButton: false,
+                timer: 2000,
+                position: "top-end",
+                toast: true,
+                timerProgressBar: true,
+                customClass: {
+                    timerProgressBar: "prog-bar-success"
+                }
+
+            })
+
+            setTimeout(() => {
+                window.location.reload(false);
+            }, 2000);
+        })
+
+        setObrigatorio(!obrigatorio);
+    }
+
+    async function excluirTarefa(id) {
+        await http.delete('api/tarefas/excluir-task/' + id).then((res) => {
+            if(res) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Tarefa excluida com sucesso!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    position: "top-end",
+                    toast: true,
+                    timerProgressBar: true,
+                    customClass: {
+                        timerProgressBar: "prog-bar-success"
+                    }
+                })
+                setTimeout(() => {
+                    window.location.reload(false);
+                }, 2000);
+            }
         })
     }
 
@@ -36,8 +101,8 @@ const Tarefas = () => {
                     <p className='bgc'>{t.description}</p>
                 </div>
                 <div className="butts">
-                    <button className='visu-but-task'>Visualizar</button>
-                    <button className='Excl-but-task'>Excluir</button>
+                    <button onClick={() => {handleShow(t.id); setIdSelecionado(t.id)}} className='visu-but-task'>Visualizar</button>
+                    <button onClick={() => excluirTarefa(t.id)} className='Excl-but-task'>Excluir</button>
                 </div>
             </li>
         </>
@@ -55,7 +120,7 @@ const Tarefas = () => {
                 <h1 className='titulo'>Minhas tarefas</h1>
                 <div className="add-tarefa">
                     <div className="titulo-camp">
-                        <label htmlFor="Titulo">Titulo <span>*</span></label>
+                        <label htmlFor="Titulo">Titulo { obrigatorio && <span>*</span>}</label>
                         <input onChange={(e) => setTitulo(e.target.value)} className='titulo-inp' type="text" />
                     </div>
                     <div className="descricao-camp">
@@ -69,6 +134,31 @@ const Tarefas = () => {
                         { tarefas && listaTarefas}
                     </ul>
                 </div>
+            </div>
+
+            <div className="modal">
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                keyboard={false}
+                centered
+                >
+                <Modal.Header closeButton>
+                    {/* ALTERAR ESSA LOGICA ABAIXO */}
+                    <Modal.Title>{ idSelecionado !== 0 &&  tarefas[0].title}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    I will not close if you click outside me. Don't even try to press
+                    escape key.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary">Understood</Button>
+                </Modal.Footer>
+            </Modal>
             </div>
         </>
     );
