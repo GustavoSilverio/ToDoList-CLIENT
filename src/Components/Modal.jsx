@@ -10,14 +10,32 @@ const Modals = (props) => {
     const tarefa = props.tarefaSelecionada[0];
     const [titulo, setTitulo] = useState(tarefa.title);
     const [desc, setDesc] = useState(tarefa.description);
+    const [completo, setCompleto] = useState(tarefa.isDone);
 
-    const salvarAlterações  = async () => {
-        if(titulo){
+    const salvarAlterações = async () => {
+        if (titulo) {
+            if (titulo === tarefa.title && desc === tarefa.description && completo === tarefa.isDone) {
+                return (
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'É necessario mudar algo pelo menos!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        position: "top-end",
+                        toast: true,
+                        timerProgressBar: false,
+                        customClass: {
+                            timerProgressBar: "prog-bar-error"
+                        }
+                    })
+                )
+            }
             await http.put("api/tarefas/atualizar-task/" + tarefa.id, {
                 title: titulo,
-                description: desc
+                description: desc,
+                isDone: completo
             }).then((res) => {
-                if(res){
+                if (res) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Tarefa alterada com sucesso!',
@@ -25,18 +43,16 @@ const Modals = (props) => {
                         timer: 2000,
                         position: "top-end",
                         toast: true,
-                        timerProgressBar: true,
+                        timerProgressBar: false,
                         customClass: {
                             timerProgressBar: "prog-bar-success"
                         }
                     })
-                    setTimeout(() => {
-                        window.location.reload(false);
-                    }, 2000);
                 }
                 props.onHide();
+                props.atualizarLista();
             })
-        }else {
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'o título é obrigatório!',
@@ -44,7 +60,7 @@ const Modals = (props) => {
                 timer: 2000,
                 position: "top-end",
                 toast: true,
-                timerProgressBar: true,
+                timerProgressBar: false,
                 customClass: {
                     timerProgressBar: "prog-bar-error"
                 }
@@ -77,16 +93,21 @@ const Modals = (props) => {
                         >
                             <Form.Label>Descrição</Form.Label>
                             <Form.Control
-                               onChange={(e) => setDesc(e.target.value)}
-                               placeholder={tarefa.description}
-                               as="textarea"
-                               rows={3} />
+                                onChange={(e) => setDesc(e.target.value)}
+                                placeholder={tarefa.description}
+                                as="textarea"
+                                rows={3} />
                         </Form.Group>
                     </Form>
+
+
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={props.onHide}>
                         Fechar
+                    </Button>
+                    <Button variant={completo? "warning" : "success"} onClick={() => setCompleto(!completo)}>
+                        { completo? "Ativar" : "Completar"}
                     </Button>
                     <Button variant="primary" onClick={() => salvarAlterações()}>
                         Salvar alterações

@@ -54,13 +54,18 @@ span {
     gap: 5px;
 }
 
+.completo {
+    color: #818181 !important;
+    text-decoration: line-through !important;
+}
+
 .titulo-inp,
 .descricao-inp {
     height: 1.5rem;
     border-radius: 10px;
     width: auto;
     border: none;
-    padding: 5px;
+    padding: 1rem;
     background-color: #383838;
     color: #fff;
     outline: none;
@@ -84,6 +89,132 @@ span {
     background-color: transparent;
 }
 
+li {
+    list-style-type: none;
+}
+
 .bgc {
     background-color: #474747;
+}
+
+.lista-das-tarefas {
+    padding:0 !important ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #474747;
+    border-radius: 5px;
+}
+
+.lista-de-tarefas {
+    max-width: 30%;
+}
+
+.txt {
+    max-width: 50%;
+}
+
+.txt h1 {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.tarefa {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 1rem;
+    align-items: center;
+    border-top: 1px solid #3A3A3A;
+    border-radius: 5px;
+}
+
+@media only screen and (max-width: 480px) {
+    .tarefa {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .lista-de-tarefas{
+        width: 90% !important;        
+    }
+}
+
+@media only screen and (max-width: 1800px) {
+    .tarefa {
+        display: grid;
+        justify-content: center;
+        justify-items: center;
+        gap: 1rem;
+    
+    }
+}
+
+.txt h1{
+    margin-bottom: 0 !important;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.t-title {
+    color: #0082FA;
+    font-weight: 400;
+    font-size: 25px;
+    margin-right: 1.5rem;
+}
+
+.visu-but-task {
+    margin-right: 21px;
+}
+
+.butts {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.butts button {
+    border: 1px solid;
+    font-weight: 400;
+    font-size: 17px;
+    background-color: transparent;
+    width: 100px;
+    height: 32px;
+    border-radius: 5px;
+    color: #fff;
+    transition: .3s;
+}
+
+.visu-but-task {
+    border-color: #0082FA !important;
+}
+
+.visu-but-task:hover {
+    background-color: #0082FA;
+}
+
+.excl-but-task {
+    border-color: #ff0000 !important;
+}
+
+.excl-but-task:hover {
+    background-color: #ff0000;
+}
+
+@media only screen and (max-width: 282px) {
+    .butts {
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .visu-but-task {
+        margin: 0;
+    }
+    
+    .txt h1 {
+        margin-right: 0 !important;
+        margin: 0 !important;
+    }
 }
